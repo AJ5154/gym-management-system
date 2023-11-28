@@ -1,8 +1,19 @@
-import { Container, Paper, TextField } from "@mui/material";
+import {
+    Button,
+    Container,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+    Typography,
+} from "@mui/material";
+import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 
-enum PerfixEnum {
+enum PrefixEnum {
   MR = "MR",
   MRS = "MRS",
   MISS = "MISS",
@@ -16,7 +27,7 @@ enum GenderEnum {
 }
 
 interface SignupProps {
-  prefix: PerfixEnum.MR | PerfixEnum.MRS | PerfixEnum.MISS;
+  prefix: PrefixEnum.MR | PrefixEnum.MRS | PrefixEnum.MISS;
   firstName: string;
   lastName: string;
   email: string; // Should follow email format validation
@@ -43,7 +54,7 @@ interface IFieldProps {
   };
 }
 
-const Signup = (props: SignupProps) => {
+const Signup = () => {
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -53,6 +64,8 @@ const Signup = (props: SignupProps) => {
       password: "",
       dateOfBirth: "",
       middleName: "",
+      gender: GenderEnum.UNSPECIFIED,
+      prefix: PrefixEnum.MR,
     },
     validationSchema: Yup.object().shape({
       firstName: Yup.string().required("First Name is required"),
@@ -61,16 +74,81 @@ const Signup = (props: SignupProps) => {
       email: Yup.string().email("Invalid Email").required("Email is required"),
       phone: Yup.string().required("Phone is required"),
       password: Yup.string().required("Password is required"),
-      dateOfBirth: Yup.string().required("Date of Birth is required"),
+      prefix: Yup.string().oneOf(
+        [PrefixEnum.MR, PrefixEnum.MRS, PrefixEnum.MISS],
+        "Invalid prefix"
+      ),
+      gender: Yup.string()
+        .oneOf(
+          [
+            GenderEnum.MALE,
+            GenderEnum.FEMALE,
+            GenderEnum.OTHER,
+            GenderEnum.UNSPECIFIED,
+          ],
+          "Invalid gender"
+        )
+        .required("Gender is required"),
+      dateOfBirth: Yup.date().required("Date of Birth is required"),
     }),
-    onSubmit: () => {
+    onSubmit: async () => {
       console.log(formik.values);
+
+      await postSignupData(formik.values);
+      formik.handleReset(null);
     },
   });
+
+  const postSignupData = async (data: SignupProps) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:7575/api/v1/auth/signup",
+        data
+      );
+      return response.data;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    }
+  };
+
   return (
-    <Container component="form" maxWidth={"sm"}>
-      <Paper elevation={3} sx={{ m: 5 }}>
+    <Container component="form" maxWidth="sm">
+      <Typography component="h1" variant="h3" align="center">
+        GymBook
+      </Typography>
+      <Paper
+        elevation={12}
+        sx={{
+          mt: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: 2,
+        }}
+      >
+        <Typography component="h1" variant="h4">
+          Create a new account
+        </Typography>
         <FormikProvider value={formik}>
+          <Field name="prefix">
+            {({ field, meta }: IFieldProps) => (
+              <FormControl variant="standard" fullWidth>
+                <InputLabel id="demo-simple-select-label">Prefix</InputLabel>
+                <Select
+                  {...field}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Prefix"
+                >
+                  <MenuItem value={PrefixEnum.MR}>MR</MenuItem>
+                  <MenuItem value={PrefixEnum.MRS}>MRS</MenuItem>
+                  <MenuItem value={PrefixEnum.MISS}>MISS</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Field>
           <Field name="firstName">
             {({ field, meta }: IFieldProps) => (
               <TextField
@@ -78,8 +156,10 @@ const Signup = (props: SignupProps) => {
                 label="First Name"
                 variant="standard"
                 fullWidth
-                error={!meta.touched && !meta.error }
-                helperText={!meta.touched && !meta.error }
+                autoFocus
+                sx={{ mx: "auto" }}
+                error={meta.touched && meta.error ? true : false}
+                helperText={meta.touched && meta.error ? meta.error : ""}
               />
             )}
           </Field>
@@ -131,6 +211,24 @@ const Signup = (props: SignupProps) => {
               />
             )}
           </Field>
+          <Field name="gender">
+            {({ field, meta }: IFieldProps) => (
+              <FormControl variant="standard" fullWidth>
+                <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+                <Select
+                  {...field}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Prefix"
+                >
+                  <MenuItem value={GenderEnum.MALE}>MALE</MenuItem>
+                  <MenuItem value={GenderEnum.FEMALE}>FEMALE</MenuItem>
+                  <MenuItem value={GenderEnum.OTHER}>OTHER</MenuItem>
+                  <MenuItem value={GenderEnum.UNSPECIFIED}>UNSPECIFIED</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Field>
           <Field name="password">
             {({ field, meta }: IFieldProps) => (
               <TextField
@@ -138,6 +236,7 @@ const Signup = (props: SignupProps) => {
                 label="Password"
                 variant="standard"
                 fullWidth
+                type="password"
                 error={meta.touched && meta.error ? true : false}
                 helperText={meta.touched && meta.error ? meta.error : ""}
               />
@@ -150,11 +249,28 @@ const Signup = (props: SignupProps) => {
                 label="Date Of Birth"
                 variant="standard"
                 fullWidth
+                type="date"
+                margin="normal"
                 error={meta.touched && meta.error ? true : false}
                 helperText={meta.touched && meta.error ? meta.error : ""}
+                InputLabelProps={{
+                    shrink: true,
+                  }}
               />
             )}
           </Field>
+          <Button
+            variant="contained"
+            sx={{ mt: 4 }}
+            fullWidth
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              formik.handleSubmit();
+            }}
+          >
+            Signup
+          </Button>
         </FormikProvider>
       </Paper>
     </Container>
