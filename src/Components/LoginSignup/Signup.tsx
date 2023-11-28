@@ -1,17 +1,13 @@
 import {
-  Button,
-  Container,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-  Typography,
+    Button,
+    Container,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+    Typography,
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
@@ -58,7 +54,7 @@ interface IFieldProps {
   };
 }
 
-const Signup = (props: SignupProps) => {
+const Signup = () => {
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -68,8 +64,8 @@ const Signup = (props: SignupProps) => {
       password: "",
       dateOfBirth: "",
       middleName: "",
-      gender: "",
-      prefix: "",
+      gender: GenderEnum.UNSPECIFIED,
+      prefix: PrefixEnum.MR,
     },
     validationSchema: Yup.object().shape({
       firstName: Yup.string().required("First Name is required"),
@@ -97,6 +93,7 @@ const Signup = (props: SignupProps) => {
     }),
     onSubmit: async () => {
       console.log(formik.values);
+
       await postSignupData(formik.values);
       formik.handleReset(null);
     },
@@ -159,6 +156,7 @@ const Signup = (props: SignupProps) => {
                 label="First Name"
                 variant="standard"
                 fullWidth
+                autoFocus
                 sx={{ mx: "auto" }}
                 error={meta.touched && meta.error ? true : false}
                 helperText={meta.touched && meta.error ? meta.error : ""}
@@ -215,35 +213,19 @@ const Signup = (props: SignupProps) => {
           </Field>
           <Field name="gender">
             {({ field, meta }: IFieldProps) => (
-              <FormControl>
-                <FormLabel id="demo-row-radio-buttons-group-label">
-                  Gender
-                </FormLabel>
-                <RadioGroup
-                  row
+              <FormControl variant="standard" fullWidth>
+                <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+                <Select
                   {...field}
-                  aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Prefix"
                 >
-                  <FormControlLabel
-                    value={GenderEnum.MALE}
-                    control={<Radio />}
-                    label="MALE"
-                  />
-                  <FormControlLabel
-                    value={GenderEnum.FEMALE}
-                    control={<Radio />}
-                    label="FEMALE"
-                  />
-                  <FormControlLabel
-                    value={GenderEnum.OTHER}
-                    control={<Radio />}
-                    label="OTHER"
-                  />
-                </RadioGroup>
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
+                  <MenuItem value={GenderEnum.MALE}>MALE</MenuItem>
+                  <MenuItem value={GenderEnum.FEMALE}>FEMALE</MenuItem>
+                  <MenuItem value={GenderEnum.OTHER}>OTHER</MenuItem>
+                  <MenuItem value={GenderEnum.UNSPECIFIED}>UNSPECIFIED</MenuItem>
+                </Select>
               </FormControl>
             )}
           </Field>
@@ -277,7 +259,10 @@ const Signup = (props: SignupProps) => {
             sx={{ mt: 4 }}
             fullWidth
             type="submit"
-            onClick={() => formik.handleSubmit()}
+            onClick={(e) => {
+              e.preventDefault();
+              formik.handleSubmit();
+            }}
           >
             Signup
           </Button>
