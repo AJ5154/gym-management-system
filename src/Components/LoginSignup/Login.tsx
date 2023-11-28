@@ -2,6 +2,15 @@ import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
+import {
+  APIErrorResponse,
+  ErrorCodesForToaster,
+} from "../../common/types/APIErrorResponse.type";
+import {
+  LocalStorageKey,
+  setLocalStorage,
+} from "../../common/utilities/localStorage";
+import { LoginApiResponse } from "./login.type";
 
 interface LoginProps {
   email: string;
@@ -32,21 +41,32 @@ const Login = () => {
     onSubmit: async () => {
       console.log(formik.values);
 
-      await postLoginData(formik.values);
+      const loginResponse = (await postLoginData(
+        formik.values
+      )) as LoginApiResponse;
+      const jwtToken = loginResponse.data.entity.token.accessToken;
+      setLocalStorage(LocalStorageKey.AccessToken, jwtToken);
       formik.handleReset(null);
     },
   });
 
-  const postLoginData = async (data: LoginProps) => {
+  const postLoginData = async (
+    data: LoginProps
+  ): Promise<LoginApiResponse | void> => {
     try {
       const response = await axios.post(
         "http://localhost:7575/api/v1/auth/login",
         data
       );
-      return response.data;
+      const apiData = response.data as LoginApiResponse;
+      return apiData;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
+      if (error instanceof APIErrorResponse) {
+        if (ErrorCodesForToaster.includes(error.statusCode)) {
+          // TODO show error toast
+        } else {
+          console.error(error.message);
+        }
       }
     }
   };
