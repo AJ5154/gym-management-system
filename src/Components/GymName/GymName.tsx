@@ -53,7 +53,13 @@ const GymName = () => {
 
   const getGymData = async () => {
     try {
-      const response = await axios.get("http://localhost:7575/api/v1/gyms");
+      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      const response = await axios.get("http://localhost:7575/api/v1/gyms", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error) {
       console.error("");
