@@ -66,7 +66,7 @@ const Login = () => {
         }}
       >
         <Typography component="h1" variant="h4">
-          Create a new account
+          Sign in to your account
         </Typography>
         <FormikProvider value={formik}>
           <Field name="email">
