@@ -249,8 +249,13 @@ const Signup = () => {
                 label="Date Of Birth"
                 variant="standard"
                 fullWidth
+                type="date"
+                margin="normal"
                 error={meta.touched && meta.error ? true : false}
                 helperText={meta.touched && meta.error ? meta.error : ""}
+                InputLabelProps={{
+                    shrink: true,
+                  }}
               />
             )}
           </Field>
