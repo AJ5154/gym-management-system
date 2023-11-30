@@ -3,12 +3,12 @@ import { Container } from "@mui/system";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import {
   LocalStorageKey,
   getLocalStorage,
 } from "../../common/utilities/localStorage";
-import { useNavigate } from "react-router-dom";
 
 interface GymNameProps {
   name: string;
@@ -26,7 +26,7 @@ interface IFieldProps {
 }
 
 const GymName = () => {
-  const [gymNameData, setGymNameData] = useState([]);
+  const [gymNameData, setGymNameData] = useState<GymNameProps[]>([]);
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -49,7 +49,7 @@ const GymName = () => {
       );
       loadGymData();
       formik.handleReset(null);
-      navigate("/Dashboard")
+      navigate("/Dashboard");
     },
   });
 
@@ -75,8 +75,10 @@ const GymName = () => {
   };
 
   useEffect(() => {
+    console.log(gymNameData);
+
     loadGymData();
-  }, []);
+  });
 
   return (
     <Container component="form" maxWidth="sm">
