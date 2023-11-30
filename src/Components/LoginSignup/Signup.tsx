@@ -2,6 +2,7 @@ import {
   Button,
   Container,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Paper,
@@ -147,6 +148,11 @@ const Signup = () => {
                   <MenuItem value={PrefixEnum.MRS}>MRS</MenuItem>
                   <MenuItem value={PrefixEnum.MISS}>MISS</MenuItem>
                 </Select>
+                {meta.touched && meta.error ? (
+                  <FormHelperText>{meta.error}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             )}
           </Field>
@@ -229,6 +235,11 @@ const Signup = () => {
                     UNSPECIFIED
                   </MenuItem>
                 </Select>
+                {meta.touched && meta.error ? (
+                  <FormHelperText>{meta.error}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             )}
           </Field>
