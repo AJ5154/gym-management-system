@@ -11,6 +11,7 @@ import {
   setLocalStorage,
 } from "../../common/utilities/localStorage";
 import { LoginApiResponse } from "./login.type";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginProps {
   email: string;
@@ -29,6 +30,7 @@ interface IFieldProps {
   };
 }
 const Login = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -47,6 +49,7 @@ const Login = () => {
       const jwtToken = loginResponse.data.entity.token.accessToken;
       setLocalStorage(LocalStorageKey.AccessToken, jwtToken);
       formik.handleReset(null);
+      navigate("/GymName");
     },
   });
 
@@ -128,6 +131,9 @@ const Login = () => {
           >
             Signup
           </Button>
+          <Typography component="p" variant="h6">
+            Create a new account? <Link to="/signup">Sign up</Link>{" "}
+          </Typography>
         </FormikProvider>
       </Paper>
     </Container>

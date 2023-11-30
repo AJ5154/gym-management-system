@@ -8,6 +8,7 @@ import {
   LocalStorageKey,
   getLocalStorage,
 } from "../../common/utilities/localStorage";
+import { useNavigate } from "react-router-dom";
 
 interface GymNameProps {
   name: string;
@@ -26,7 +27,7 @@ interface IFieldProps {
 
 const GymName = () => {
   const [gymNameData, setGymNameData] = useState([]);
-
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -48,6 +49,7 @@ const GymName = () => {
       );
       loadGymData();
       formik.handleReset(null);
+      navigate("/Dashboard")
     },
   });
 
