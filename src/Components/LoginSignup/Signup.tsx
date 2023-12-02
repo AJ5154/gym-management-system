@@ -1,16 +1,18 @@
 import {
-    Button,
-    Container,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    TextField,
-    Typography,
+  Button,
+  Container,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
 enum PrefixEnum {
@@ -146,6 +148,11 @@ const Signup = () => {
                   <MenuItem value={PrefixEnum.MRS}>MRS</MenuItem>
                   <MenuItem value={PrefixEnum.MISS}>MISS</MenuItem>
                 </Select>
+                {meta.touched && meta.error ? (
+                  <FormHelperText>{meta.error}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             )}
           </Field>
@@ -224,8 +231,15 @@ const Signup = () => {
                   <MenuItem value={GenderEnum.MALE}>MALE</MenuItem>
                   <MenuItem value={GenderEnum.FEMALE}>FEMALE</MenuItem>
                   <MenuItem value={GenderEnum.OTHER}>OTHER</MenuItem>
-                  <MenuItem value={GenderEnum.UNSPECIFIED}>UNSPECIFIED</MenuItem>
+                  <MenuItem value={GenderEnum.UNSPECIFIED}>
+                    UNSPECIFIED
+                  </MenuItem>
                 </Select>
+                {meta.touched && meta.error ? (
+                  <FormHelperText>{meta.error}</FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             )}
           </Field>
@@ -254,8 +268,8 @@ const Signup = () => {
                 error={meta.touched && meta.error ? true : false}
                 helperText={meta.touched && meta.error ? meta.error : ""}
                 InputLabelProps={{
-                    shrink: true,
-                  }}
+                  shrink: true,
+                }}
               />
             )}
           </Field>
@@ -271,6 +285,9 @@ const Signup = () => {
           >
             Signup
           </Button>
+          <Typography component="p" variant="h6">
+            Already have an account? <Link to="/">Log In</Link>
+          </Typography>
         </FormikProvider>
       </Paper>
     </Container>

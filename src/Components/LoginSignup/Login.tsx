@@ -1,7 +1,25 @@
-import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  Paper,
+  Snackbar,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import {
+  APIErrorResponse,
+  ErrorCodesForToaster,
+} from "../../common/types/APIErrorResponse.type";
+import {
+  LocalStorageKey,
+  setLocalStorage,
+} from "../../common/utilities/localStorage";
+import { LoginApiResponse } from "./login.type";
 
 interface LoginProps {
   email: string;
@@ -20,6 +38,7 @@ interface IFieldProps {
   };
 }
 const Login = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -32,21 +51,39 @@ const Login = () => {
     onSubmit: async () => {
       console.log(formik.values);
 
-      await postLoginData(formik.values);
+      const loginResponse = (await postLoginData(
+        formik.values
+      )) as LoginApiResponse;
+      const jwtToken = loginResponse.data.entity.token.accessToken;
+      setLocalStorage(LocalStorageKey.AccessToken, jwtToken);
       formik.handleReset(null);
+      navigate("/GymName");
     },
   });
 
-  const postLoginData = async (data: LoginProps) => {
+  const [errorToastOpen, setErrorToastOpen] = useState(false);
+
+  const handleSnackbarClose = () => {
+    setErrorToastOpen(false);
+  };
+  const postLoginData = async (
+    data: LoginProps
+  ): Promise<LoginApiResponse | void> => {
     try {
       const response = await axios.post(
         "http://localhost:7575/api/v1/auth/login",
         data
       );
-      return response.data;
+      const apiData = response.data as LoginApiResponse;
+      return apiData;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
+      if (error instanceof APIErrorResponse) {
+        if (ErrorCodesForToaster.includes(error.statusCode)) {
+          // TODO show error toast
+          setErrorToastOpen(true);
+        } else {
+          console.error(error.message);
+        }
       }
     }
   };
@@ -108,6 +145,18 @@ const Login = () => {
           >
             Signup
           </Button>
+          <Typography component="p" variant="h6">
+            Create a new account?{" "}
+            <Link to="/signup">
+              Sign up
+            </Link>
+          </Typography>
+          <Snackbar
+            open={errorToastOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            message="An error occurred. Please try again."
+          />
         </FormikProvider>
       </Paper>
     </Container>
