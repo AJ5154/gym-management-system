@@ -135,7 +135,7 @@ const Login = () => {
           </Field>
           <Button
             variant="contained"
-            sx={{ mt: 4, textTransform:"initial"}}
+            sx={{ mt: 4}}
             fullWidth
             type="submit"
             onClick={(e) => {
@@ -143,7 +143,7 @@ const Login = () => {
               formik.handleSubmit();
             }}
           >
-            LogIn
+            Sign In
           </Button>
           <Typography component="p" sx={{fontSize:"15px",mt:3}} variant="h6">
             Create a new account?{" "}

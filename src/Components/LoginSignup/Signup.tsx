@@ -95,10 +95,14 @@ const Signup = () => {
       dateOfBirth: Yup.date().required("Date of Birth is required"),
     }),
     onSubmit: async () => {
-      console.log(formik.values);
-      await postSignupData(formik.values);
-      navigate("/")
-      formik.handleReset(null);
+      try {
+        console.log(formik.values);
+        await postSignupData(formik.values);
+        navigate("/");
+        formik.handleReset(null);
+      } catch (error) {
+        console.error(error.message);
+      }
     },
   });
 
@@ -286,7 +290,7 @@ const Signup = () => {
           >
             Signup
           </Button>
-          <Typography component="p" variant="h6">
+          <Typography component="p" sx={{fontSize:"15px",mt:3}} variant="h6">
             Already have an account? <Link to="/">Log In</Link>
           </Typography>
         </FormikProvider>
