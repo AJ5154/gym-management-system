@@ -103,23 +103,24 @@ const Plan = () => {
     <>
       <Navbar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Grid item>
-          <Grid>
-            <Typography component="h1" sx={{ mt: 8, ml: 15 }} variant="h5">
+        <Grid container sx={{ mt: 10 }}>
+          <Grid item xs>
+            <Typography component="h1" variant="h5" sx={{ ml: 30 }}>
               Add Plan
             </Typography>
           </Grid>
-          <Grid>
+          <Grid item>
             <Button
               variant="contained"
-              sx={{ mt: 8, ml: 165 }}
               color="success"
+              sx={{ mr: 4 }}
               onClick={handleOpen}
             >
               <Window /> Add Plan
             </Button>
           </Grid>
         </Grid>
+
         <Modal
           open={open}
           onClose={handleClose}
