@@ -2,6 +2,7 @@ import { Book } from "@mui/icons-material";
 import {
     Box,
     Button,
+    Grid,
     Modal,
     TextField,
     Typography
@@ -10,6 +11,7 @@ import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import Navbar from "../Navbar";
 import BatchData from "./BatchData";
 
 const style = {
@@ -97,9 +99,26 @@ const Batch = () => {
 
   return (
     <>
-      <Button variant="contained" color="success" onClick={handleOpen}>
-        <Book /> Add Batch
-      </Button>
+    <Navbar />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Grid container sx={{ mt: 10 }}>
+          <Grid item xs>
+            <Typography component="h1" variant="h5" sx={{ ml: 30 }}>
+              Add Batch
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ mr: 4 }}
+              onClick={handleOpen}
+            >
+              <Book /> Add Batch
+            </Button>
+          </Grid>
+        </Grid>
+    
       <Modal
         open={open}
         onClose={handleClose}
@@ -181,6 +200,7 @@ const Batch = () => {
         </Box>
       </Modal>
       <BatchData batchDataProps={gymBatchData} />
+      </Box>
     </>
   );
 };

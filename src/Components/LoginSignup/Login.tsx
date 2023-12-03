@@ -2,13 +2,11 @@ import {
   Button,
   Container,
   Paper,
-  Snackbar,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import {
@@ -61,11 +59,7 @@ const Login = () => {
     },
   });
 
-  const [errorToastOpen, setErrorToastOpen] = useState(false);
-
-  const handleSnackbarClose = () => {
-    setErrorToastOpen(false);
-  };
+  
   const postLoginData = async (
     data: LoginProps
   ): Promise<LoginApiResponse | void> => {
@@ -80,7 +74,6 @@ const Login = () => {
       if (error instanceof APIErrorResponse) {
         if (ErrorCodesForToaster.includes(error.statusCode)) {
           // TODO show error toast
-          setErrorToastOpen(true);
         } else {
           console.error(error.message);
         }
@@ -151,12 +144,7 @@ const Login = () => {
               Sign up
             </Link>
           </Typography>
-          <Snackbar
-            open={errorToastOpen}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-            message="An error occurred. Please try again."
-          />
+          
         </FormikProvider>
       </Paper>
     </Container>

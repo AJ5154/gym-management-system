@@ -98,7 +98,7 @@ const Signup = () => {
       try {
         console.log(formik.values);
         await postSignupData(formik.values);
-        navigate("/");
+        navigate("/gymname");
         formik.handleReset(null);
       } catch (error) {
         console.error(error.message);
