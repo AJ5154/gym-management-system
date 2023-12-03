@@ -1,3 +1,4 @@
+import { Logout } from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -15,9 +16,12 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import React from "react";
-import { mainListItems, secondaryListItems, ternaryListItems } from "./ListItem";
-import { Flare, Logout } from "@mui/icons-material";
-
+import {
+  mainListItems,
+  secondaryListItems,
+  ternaryListItems,
+} from "./ListItem";
+import { setLocalStorage, LocalStorageKey } from "../../common/utilities/localStorage";
 
 const drawerWidth = 240;
 
@@ -92,6 +96,7 @@ const Drawer = styled(MuiDrawer, {
 const Dashboard = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -101,11 +106,16 @@ const Dashboard = () => {
     setOpen(false);
   };
 
+  const handleLogout = () => {
+    setLocalStorage(LocalStorageKey.AccessToken, "");
+    window.location.href = "/"; 
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{backgroundColor:"white"}} open={open}>
-        <Toolbar >
+      <AppBar position="fixed" sx={{ backgroundColor: "white" }} open={open}>
+        <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -114,19 +124,32 @@ const Dashboard = () => {
             sx={{
               marginRight: 5,
               ...(open && { display: "none" }),
-              color:"darkgray"
+              color: "darkgray",
             }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" sx={{color:"black"}} noWrap component="div">
+          <Typography
+            variant="h6"
+            sx={{ color: "black" }}
+            noWrap
+            component="div"
+          >
             Members
           </Typography>
-          <Button variant="outlined" color="success" href="/" sx={{marginLeft:"80%"}} > <Logout/> Logout</Button>
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={handleLogout}
+            sx={{ marginLeft: "80%" }}
+          >
+            {" "}
+            <Logout /> Logout
+          </Button>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent"  open={open}>
-        <DrawerHeader >
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -136,7 +159,7 @@ const Dashboard = () => {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
+        <List sx={{ backgroundColor: "lightgray" }}>
           {mainListItems}
           <Divider />
           {secondaryListItems}
@@ -144,6 +167,7 @@ const Dashboard = () => {
           {ternaryListItems}
         </List>
       </Drawer>
+      
     </Box>
   );
 };
