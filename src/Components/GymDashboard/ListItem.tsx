@@ -1,5 +1,6 @@
 import {
     DashboardRounded,
+    DateRange,
     Download,
     GridView,
     People,
@@ -58,7 +59,7 @@ export const ternaryListItems = (
     </ListItemButton>
     <ListItemButton >
       <ListItemIcon>
-        <People />
+        <DateRange />
       </ListItemIcon>
       <ListItemText primary="Batch" />
     </ListItemButton>

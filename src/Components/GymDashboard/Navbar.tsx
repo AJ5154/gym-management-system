@@ -3,6 +3,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   Box,
+  Button,
   CssBaseline,
   Divider,
   IconButton,
@@ -15,6 +16,7 @@ import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import React from "react";
 import { mainListItems, secondaryListItems, ternaryListItems } from "./ListItem";
+import { Flare, Logout } from "@mui/icons-material";
 
 
 const drawerWidth = 240;
@@ -102,8 +104,8 @@ const Dashboard = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
+      <AppBar position="fixed" sx={{backgroundColor:"white"}} open={open}>
+        <Toolbar >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -112,17 +114,19 @@ const Dashboard = () => {
             sx={{
               marginRight: 5,
               ...(open && { display: "none" }),
+              color:"darkgray"
             }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" sx={{color:"black"}} noWrap component="div">
             Members
           </Typography>
+          <Button variant="outlined" color="success" href="/" sx={{marginLeft:"80%"}} > <Logout/> Logout</Button>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
+      <Drawer variant="permanent"  open={open}>
+        <DrawerHeader >
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />

@@ -76,9 +76,8 @@ const GymName = () => {
 
   useEffect(() => {
     console.log(gymNameData);
-
     loadGymData();
-  });
+  },[]);
 
   return (
     <Container component="form" maxWidth="sm">
