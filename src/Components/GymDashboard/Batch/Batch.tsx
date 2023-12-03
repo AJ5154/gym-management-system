@@ -1,21 +1,16 @@
+import { Book } from "@mui/icons-material";
 import {
-  Button,
-  Modal,
-  Box,
-  Typography,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
+    Box,
+    Button,
+    Modal,
+    TextField,
+    Typography
 } from "@mui/material";
 import axios from "axios";
-import { useFormik, FormikProvider, Field } from "formik";
+import { Field, FormikProvider, useFormik } from "formik";
 import React, { useEffect, useState } from "react";
-import PlanData from "../Plan/PlanData";
 import * as Yup from "yup";
-import { Book } from "@mui/icons-material";
+import BatchData from "./BatchData";
 
 const style = {
   position: "absolute" as const,
@@ -63,8 +58,8 @@ const Batch = () => {
     validationSchema: Yup.object().shape({
       batchName: Yup.string().required("Batch Name is required"),
       batchLimit: Yup.string().required("Batch Limit is required"),
-      batchOpenTime: Yup.string().required("Batch Open Time Plan is required"),
-      batchCloseTime: Yup.string().required("Batch Close Time Plan is required"),
+      batchOpenTime: Yup.string().required("Batch Open Time is required"),
+      batchCloseTime: Yup.string().required("Batch Close Time is required"),
     }),
     onSubmit: async () => {
       console.log(formik.values);
@@ -74,15 +69,15 @@ const Batch = () => {
       //     await axios.post("", formik.values);
       //   }
 
-      loadGymPlanData();
+      loadGymBatchData();
       formik.handleReset(null);
     },
   });
 
-  const getGymPlanData = async () => {
+  const getGymBatchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:7575/api/v1/gyms/plans"
+        "http://localhost:7575/api/v1/gyms/batch"
       );
       return response.data;
     } catch (error: any) {
@@ -91,19 +86,19 @@ const Batch = () => {
     }
   };
 
-  const loadGymPlanData = async () => {
-    const loadPlanData = await getGymPlanData();
-    setGymBatchData(loadPlanData);
+  const loadGymBatchData = async () => {
+    const loadBatchData = await getGymBatchData();
+    setGymBatchData(loadBatchData);
   };
 
   useEffect(() => {
-    loadGymPlanData();
-  });
+    loadGymBatchData();
+  },[]);
 
   return (
     <>
       <Button variant="contained" color="success" onClick={handleOpen}>
-        <Book /> Add Plan
+        <Book /> Add Batch
       </Button>
       <Modal
         open={open}
@@ -113,7 +108,7 @@ const Batch = () => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add Plan
+            Add Batch
           </Typography>
           <FormikProvider value={formik}>
             <Field name="batchName">
@@ -185,7 +180,7 @@ const Batch = () => {
           </FormikProvider>
         </Box>
       </Modal>
-      <PlanData batchDataProps={gymBatchData} />
+      <BatchData batchDataProps={gymBatchData} />
     </>
   );
 };

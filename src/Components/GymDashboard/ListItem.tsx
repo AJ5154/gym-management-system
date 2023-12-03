@@ -51,13 +51,13 @@ export const secondaryListItems = (
 export const ternaryListItems = (
   <React.Fragment>
     <ListSubheader inset>Master</ListSubheader>
-    <ListItemButton>
+    <ListItemButton href="/plan">
       <ListItemIcon>
         <GridView />
       </ListItemIcon>
       <ListItemText primary="Plan" />
     </ListItemButton>
-    <ListItemButton >
+    <ListItemButton href="/batch" >
       <ListItemIcon>
         <DateRange />
       </ListItemIcon>

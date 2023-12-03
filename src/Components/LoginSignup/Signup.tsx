@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 enum PrefixEnum {
@@ -57,6 +57,7 @@ interface IFieldProps {
 }
 
 const Signup = () => {
+  const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -95,8 +96,8 @@ const Signup = () => {
     }),
     onSubmit: async () => {
       console.log(formik.values);
-
       await postSignupData(formik.values);
+      navigate("/")
       formik.handleReset(null);
     },
   });
