@@ -18,6 +18,11 @@ import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import PlanData from "./PlanData";
 import Navbar from "../Navbar";
+import { APIErrorResponse } from "../../../common/types/APIErrorResponse.type";
+import {
+  LocalStorageKey,
+  getLocalStorage,
+} from "../../../common/utilities/localStorage";
 
 const style = {
   position: "absolute" as const,
@@ -31,10 +36,10 @@ const style = {
   p: 4,
 };
 
-interface LoginProps {
-  planName: string;
-  price: string;
-  monthPlan: string;
+interface gymPlanProps {
+  name: string;
+  price: number;
+  durationInMoths: number;
 }
 
 interface NewType {
@@ -53,25 +58,31 @@ const Plan = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [gymplanData, setGymPlanData] = useState([]);
+  const [gymplanData, setGymPlanData] = useState<gymPlanProps[]>([]);
   const formik = useFormik({
     initialValues: {
-      planName: "",
-      price: "",
-      monthPlan: "",
+      name: "",
+      price: 0,
+      durationInMoths: 1,
     },
     validationSchema: Yup.object().shape({
-      planName: Yup.string().required("Plan Name is required"),
-      price: Yup.string().required("Price is required"),
-      monthPlan: Yup.string().required("Month Plan is required"),
+      name: Yup.string().required("Name is required"),
+      price: Yup.number().required("Price is required"),
+      durationInMoths: Yup.number().required("Month Plan is required"),
     }),
     onSubmit: async () => {
       console.log(formik.values);
-      if (formik.values.id) {
-        await axios.put(``, formik.values);
-      } else {
-        await axios.post("", formik.values);
-      }
+      const userID = getLocalStorage(LocalStorageKey.UserID);
+      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      console.log("Price Value:", formik.values.price);
+      await axios.post(
+        `http://localhost:7575/api/v1/gyms/${userID}/plans`,{...formik.values},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       loadGymPlanData();
       formik.handleReset(null);
@@ -80,12 +91,21 @@ const Plan = () => {
 
   const getGymPlanData = async () => {
     try {
+      const userID = getLocalStorage(LocalStorageKey.UserID);
+      const token = getLocalStorage(LocalStorageKey.AccessToken);
       const response = await axios.get(
-        "http://localhost:7575/api/v1/gyms/plans"
+        `http://localhost:7575/api/v1/gyms/${userID}/plans`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return response.data;
-    } catch (error) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof APIErrorResponse) {
+        console.error(error.message);
+      }
       return [];
     }
   };
@@ -132,7 +152,7 @@ const Plan = () => {
               Add Plan
             </Typography>
             <FormikProvider value={formik}>
-              <Field name="planName">
+              <Field name="name">
                 {({ field, meta }: IFieldProps) => (
                   <TextField
                     {...field}
@@ -152,17 +172,18 @@ const Plan = () => {
                     label="Price"
                     variant="standard"
                     fullWidth
+                    type="number"
                     sx={{ mx: "auto" }}
                     error={meta.touched && meta.error ? true : false}
                     helperText={meta.touched && meta.error ? meta.error : ""}
                   />
                 )}
               </Field>
-              <Field name="monthPlan">
+              <Field name="durationInMoths">
                 {({ field, meta }: IFieldProps) => (
                   <FormControl variant="standard" fullWidth>
                     <InputLabel id="demo-simple-select-label">
-                      Prefix
+                      Duration In Moths
                     </InputLabel>
                     <Select
                       {...field}
@@ -170,11 +191,11 @@ const Plan = () => {
                       id="demo-simple-select"
                       label="Select Month Plan"
                     >
-                      <MenuItem value={"1 Month"}>1 Month</MenuItem>
-                      <MenuItem value={"3 Month"}>3 Month</MenuItem>
-                      <MenuItem value={"6 Month"}>6 Month</MenuItem>
-                      <MenuItem value={"9 Month"}>9 Month</MenuItem>
-                      <MenuItem value={"12 Month"}>12 Month</MenuItem>
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                      <MenuItem value={6}>6</MenuItem>
+                      <MenuItem value={9}>9</MenuItem>
+                      <MenuItem value={12}>12</MenuItem>
                     </Select>
                     {meta.touched && meta.error ? (
                       <FormHelperText>{meta.error}</FormHelperText>

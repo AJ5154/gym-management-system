@@ -14,6 +14,7 @@ import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { APIErrorResponse } from "../../common/types/APIErrorResponse.type";
 
 enum PrefixEnum {
   MR = "MR",
@@ -57,7 +58,7 @@ interface IFieldProps {
 }
 
 const Signup = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -100,8 +101,10 @@ const Signup = () => {
         await postSignupData(formik.values);
         navigate("/gymname");
         formik.handleReset(null);
-      } catch (error) {
-        console.error(error.message);
+      } catch (error: unknown) {
+        if (error instanceof APIErrorResponse) {
+          console.error(error.message);
+        }
       }
     },
   });
@@ -114,9 +117,10 @@ const Signup = () => {
       );
       return response.data;
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof APIErrorResponse) {
         console.error(error.message);
       }
+      return [];
     }
   };
 
@@ -290,7 +294,11 @@ const Signup = () => {
           >
             Signup
           </Button>
-          <Typography component="p" sx={{fontSize:"15px",mt:3}} variant="h6">
+          <Typography
+            component="p"
+            sx={{ fontSize: "15px", mt: 3 }}
+            variant="h6"
+          >
             Already have an account? <Link to="/">Log In</Link>
           </Typography>
         </FormikProvider>
