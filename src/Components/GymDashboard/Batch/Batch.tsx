@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import Navbar from "../Navbar";
 import BatchData from "./BatchData";
+import { APIErrorResponse } from "../../../common/types/APIErrorResponse.type";
 
 const style = {
   position: "absolute" as const,
@@ -26,7 +27,7 @@ const style = {
   p: 4,
 };
 
-interface LoginProps {
+interface GymBatchProps {
   batchName: string;
   batchLimit: string;
   batchOpenTime: string;
@@ -49,7 +50,7 @@ const Batch = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [gymBatchData, setGymBatchData] = useState<LoginProps[]>([]);
+  const [gymBatchData, setGymBatchData] = useState<GymBatchProps[]>([]);
   const formik = useFormik({
     initialValues: {
       batchName: "",
@@ -82,8 +83,10 @@ const Batch = () => {
         "http://localhost:7575/api/v1/gyms/batch"
       );
       return response.data;
-    } catch (error: any) {
-      console.error(error.message);
+    } catch (error: unknown) {
+      if (error instanceof APIErrorResponse) {
+        console.error(error.message);
+        }
       return [];
     }
   };

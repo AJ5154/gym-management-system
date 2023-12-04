@@ -1,10 +1,4 @@
-import {
-  Button,
-  Container,
-  Paper,
-  TextField,
-  Typography
-} from "@mui/material";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
@@ -59,7 +53,6 @@ const Login = () => {
     },
   });
 
-  
   const postLoginData = async (
     data: LoginProps
   ): Promise<LoginApiResponse | void> => {
@@ -128,7 +121,7 @@ const Login = () => {
           </Field>
           <Button
             variant="contained"
-            sx={{ mt: 4}}
+            sx={{ mt: 4 }}
             fullWidth
             type="submit"
             onClick={(e) => {
@@ -138,13 +131,13 @@ const Login = () => {
           >
             Sign In
           </Button>
-          <Typography component="p" sx={{fontSize:"15px",mt:3}} variant="h6">
-            Create a new account?{" "}
-            <Link to="/signup">
-              Sign up
-            </Link>
+          <Typography
+            component="p"
+            sx={{ fontSize: "15px", mt: 3 }}
+            variant="h6"
+          >
+            Create a new account? <Link to="/signup">Sign up</Link>
           </Typography>
-          
         </FormikProvider>
       </Paper>
     </Container>
