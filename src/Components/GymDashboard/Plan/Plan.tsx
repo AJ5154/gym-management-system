@@ -1,28 +1,30 @@
 import { Window } from "@mui/icons-material";
 import {
-  Button,
-  Modal,
   Box,
-  Typography,
-  TextField,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
   FormControl,
   FormHelperText,
+  Grid,
   InputLabel,
   MenuItem,
+  Modal,
   Select,
-  Grid,
+  TextField,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import * as Yup from "yup";
-import PlanData from "./PlanData";
-import Navbar from "../Navbar";
 import { APIErrorResponse } from "../../../common/types/APIErrorResponse.type";
 import {
   LocalStorageKey,
   getLocalStorage,
 } from "../../../common/utilities/localStorage";
+import Navbar from "../Navbar";
 
 const style = {
   position: "absolute" as const,
@@ -37,9 +39,11 @@ const style = {
 };
 
 interface gymPlanProps {
+  durationInMoths: ReactNode;
   name: string;
   price: number;
-  durationInMoths: number;
+  durationInMonths: number;
+  id: string;
 }
 
 interface NewType {
@@ -55,15 +59,19 @@ interface IFieldProps {
 }
 
 const Plan = () => {
+  const [gymplanData, setGymPlanData] = useState<{ data: gymPlanProps[] }>({
+    data: [],
+  });
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [gymplanData, setGymPlanData] = useState<gymPlanProps[]>([]);
+  const GymId = getLocalStorage(LocalStorageKey.GymId);
   const formik = useFormik({
     initialValues: {
       name: "",
       price: 0,
       durationInMoths: 1,
+      id: "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Name is required"),
@@ -71,12 +79,51 @@ const Plan = () => {
       durationInMoths: Yup.number().required("Month Plan is required"),
     }),
     onSubmit: async () => {
-      console.log(formik.values);
-      const userID = getLocalStorage(LocalStorageKey.UserID);
+      console.log(formik.values.id);
       const token = getLocalStorage(LocalStorageKey.AccessToken);
-      console.log("Price Value:", formik.values.price);
-      await axios.post(
-        `http://localhost:7575/api/v1/gyms/${userID}/plans`,{...formik.values},
+      const { id, createdAt, updatedAt, deleted, gymId, ...restFormikValues } =
+        formik.values;
+
+      try {
+        if (id) {
+          await axios.put(
+            `http://localhost:7575/api/v1/gyms/${GymId}/plans/${id}`,
+            { ...restFormikValues },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } else {
+          await axios.post(
+            `http://localhost:7575/api/v1/gyms/${GymId}/plans`,
+            { ...restFormikValues },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        }
+        loadGymPlanData();
+        formik.handleReset(null);
+      } catch (error) {
+        console.error("Error submitting plan:", error);
+      }
+    },
+  });
+
+  const editGymPlanData = (data: gymPlanProps) => {
+    handleOpen();
+    formik.setValues(data);
+  };
+
+  const deleteGymPlanData = async (planId: string) => {
+    try {
+      const token = getLocalStorage(LocalStorageKey.AccessToken);
+      await axios.delete(
+        `http://localhost:7575/api/v1/gyms/${GymId}/plans/${planId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,17 +131,22 @@ const Plan = () => {
         }
       );
 
-      loadGymPlanData();
-      formik.handleReset(null);
-    },
-  });
+      const updatedPlans = gymplanData.data.filter(
+        (plan: { id: string }) => plan.id !== planId
+      );
+      setGymPlanData({ ...gymplanData, data: updatedPlans });
+
+      handleClose();
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+    }
+  };
 
   const getGymPlanData = async () => {
     try {
-      const userID = getLocalStorage(LocalStorageKey.UserID);
       const token = getLocalStorage(LocalStorageKey.AccessToken);
       const response = await axios.get(
-        `http://localhost:7575/api/v1/gyms/${userID}/plans`,
+        `http://localhost:7575/api/v1/gyms/${GymId}/plans`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -119,6 +171,7 @@ const Plan = () => {
     loadGymPlanData();
   }, []);
 
+  const plans = Array.isArray(gymplanData.data) ? gymplanData.data : [];
   return (
     <>
       <Navbar />
@@ -213,6 +266,7 @@ const Plan = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   formik.handleSubmit();
+                  handleClose();
                 }}
               >
                 Save
@@ -220,7 +274,46 @@ const Plan = () => {
             </FormikProvider>
           </Box>
         </Modal>
-        <PlanData planDataProps={gymplanData} />
+      </Box>
+      <Box sx={{ ml: 30, mr: 10 }}>
+        <Grid container>
+          {plans.length > 0 ? (
+            plans.map((plan, idx) => (
+              <Grid item key={idx} xs={12} sm={6} md={4} lg={3}>
+                <Card sx={{ maxWidth: 350, ml: 2, mt: 2, mb: 2, height: 190 }}>
+                  <CardContent>
+                    <Typography gutterBottom variant="h6" component="div">
+                      Plan Name: {plan.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Price: {plan.price}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Plan Duration: {plan.durationInMoths}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => deleteGymPlanData(plan.id)}
+                    >
+                      Delete
+                    </Button>
+                    <Button size="small" onClick={() => editGymPlanData(plan)}>
+                      Edit
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs={12}>
+              <Typography variant="body2" color="text.secondary">
+                No plans available.
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
       </Box>
     </>
   );
