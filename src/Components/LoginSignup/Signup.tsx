@@ -99,7 +99,7 @@ const Signup = () => {
       try {
         console.log(formik.values);
         await postSignupData(formik.values);
-        navigate("/gymname");
+        navigate("/");
         formik.handleReset(null);
       } catch (error: unknown) {
         if (error instanceof APIErrorResponse) {
