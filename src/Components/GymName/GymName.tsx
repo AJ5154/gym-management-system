@@ -80,9 +80,21 @@ const GymName = () => {
   };
 
   useEffect(() => {
-    console.log(gymNameData);
     loadGymData();
   }, []);
+
+  useEffect(() => {
+    const checkExistingGym = async () => {
+      const gymData = await getGymData();
+        if (gymData && gymData.data && gymData.data.length > 0) {
+        const gymId = gymData.data[0].id; 
+        localStorage.setItem('GymId', gymId);
+        navigate("/Dashboard");
+      }
+    };
+  
+    checkExistingGym();
+  }, [navigate]);
 
   return (
     <Container component="form" maxWidth="sm">
