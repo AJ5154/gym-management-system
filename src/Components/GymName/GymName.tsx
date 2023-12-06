@@ -38,7 +38,7 @@ const GymName = () => {
     onSubmit: async () => {
       console.log(formik.values);
       const token = getLocalStorage(LocalStorageKey.AccessToken);
-      await axios.post(
+      const response=await axios.post(
         "http://localhost:7575/api/v1/gyms",
         { ...formik.values },
         {
@@ -47,6 +47,11 @@ const GymName = () => {
           },
         }
       );
+      console.log("Response Data:", response.data);
+
+        const gymId = response.data.data.id;
+        localStorage.setItem('GymId',gymId)
+
       loadGymData();
       formik.handleReset(null);
       navigate("/Dashboard");
@@ -77,7 +82,7 @@ const GymName = () => {
   useEffect(() => {
     console.log(gymNameData);
     loadGymData();
-  },[]);
+  }, []);
 
   return (
     <Container component="form" maxWidth="sm">

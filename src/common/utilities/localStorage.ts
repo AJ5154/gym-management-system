@@ -1,6 +1,6 @@
 export enum LocalStorageKey {
   AccessToken = "accessToken",
-  UserID = "UserID"
+  GymId = "GymId"
 }
 
 export function setLocalStorage(key: LocalStorageKey, value: string) {
