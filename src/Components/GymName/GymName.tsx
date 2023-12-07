@@ -3,15 +3,16 @@ import { Container } from "@mui/system";
 import axios from "axios";
 import { Field, FormikProvider, useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import {
   LocalStorageKey,
   getLocalStorage,
 } from "../../common/utilities/localStorage";
+import { useNavigate } from "react-router-dom";
 
 interface GymNameProps {
   name: string;
+  id: string;
 }
 interface NewType {
   value: string;
@@ -38,7 +39,7 @@ const GymName = () => {
     onSubmit: async () => {
       console.log(formik.values);
       const token = getLocalStorage(LocalStorageKey.AccessToken);
-      const response=await axios.post(
+      const response = await axios.post(
         "http://localhost:7575/api/v1/gyms",
         { ...formik.values },
         {
@@ -49,12 +50,12 @@ const GymName = () => {
       );
       console.log("Response Data:", response.data);
 
-        const gymId = response.data.data.id;
-        localStorage.setItem('GymId',gymId)
+      const gymId = response.data.data.id;
+      localStorage.setItem("GymId", gymId);
 
       loadGymData();
+      navigate("/Navbar");
       formik.handleReset(null);
-      navigate("/Dashboard");
     },
   });
 
@@ -67,7 +68,10 @@ const GymName = () => {
         },
       });
 
-      return response.data;
+      const gymData = response.data.data;
+
+      localStorage.setItem("gymData", JSON.stringify(gymData));
+      return gymData;
     } catch (error) {
       console.error("");
       return [];
@@ -82,19 +86,6 @@ const GymName = () => {
   useEffect(() => {
     loadGymData();
   }, []);
-
-  useEffect(() => {
-    const checkExistingGym = async () => {
-      const gymData = await getGymData();
-        if (gymData && gymData.data && gymData.data.length > 0) {
-        const gymId = gymData.data[0].id; 
-        localStorage.setItem('GymId', gymId);
-        navigate("/Dashboard");
-      }
-    };
-  
-    checkExistingGym();
-  }, [navigate]);
 
   return (
     <Container component="form" maxWidth="sm">

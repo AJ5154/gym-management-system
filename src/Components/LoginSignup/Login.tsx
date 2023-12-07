@@ -49,7 +49,7 @@ const Login = () => {
       const jwtToken = loginResponse.data.entity.token.accessToken;
       setLocalStorage(LocalStorageKey.AccessToken, jwtToken);
       formik.handleReset(null);
-      navigate("/GymName");
+      navigate("/Dashboard");
     },
   });
 

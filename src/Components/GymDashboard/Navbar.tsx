@@ -107,8 +107,9 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    setLocalStorage(LocalStorageKey.AccessToken, "");
+    localStorage.clear()
     window.location.href = "/"; 
+
   };
 
   return (
@@ -143,7 +144,6 @@ const Dashboard = () => {
             onClick={handleLogout}
             sx={{ marginLeft: "80%" }}
           >
-            {" "}
             <Logout /> Logout
           </Button>
         </Toolbar>
