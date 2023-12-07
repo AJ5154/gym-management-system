@@ -40,7 +40,7 @@ export const mainListItems = (
 export const secondaryListItems = (
   <React.Fragment>
     <ListSubheader inset>Manage Gym</ListSubheader>
-    <ListItemButton>
+    <ListItemButton href="/members">
       <ListItemIcon>
         <People />
       </ListItemIcon>

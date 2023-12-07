@@ -1,7 +1,6 @@
-import React from "react";
+import useGym from "../../Context/UseGym";
 import GymName from "../GymName/GymName";
 import Navbar from "./Navbar";
-import useGym from "../../Context/UseGym";
 
 const Dashboard = () => {
   const { gymExists } = useGym();
